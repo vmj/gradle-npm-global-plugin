@@ -1,0 +1,72 @@
+plugins {
+    id 'groovy'
+    id 'groovy-gradle-plugin'
+    id 'jvm-test-suite'
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.16.0'
+}
+
+group 'fi.linuxbox'
+version '0.1.0'
+
+repositories {
+    gradlePluginPortal()
+}
+
+testing {
+    suites {
+        functionalTest(JvmTestSuite) {
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+tasks.named('check') {
+    dependsOn(testing.suites.functionalTest)
+}
+
+// Configure plugin development plugin
+gradlePlugin {
+    // Tell it which source set is using the Gradle TestKit (GradleRunner)
+    testSourceSets(sourceSets.functionalTest)
+
+    //
+    plugins {
+        npmGlobalPlugin {
+            id = 'fi.linuxbox.npm-global'
+            implementationClass = 'fi.linuxbox.gradle.npm.global.NpmGlobalPlugin'
+
+            displayName = 'NPM Global -plugin'
+            description = 'Install Node-based tools which are needed by a build'
+        }
+    }
+}
+
+// Configure the plugin publishing plugin
+pluginBundle {
+    //website = 'https://...'
+    vcsUrl = 'https://github.com/vmj/gradle-npm-global-plugin'
+    tags = ['npm', 'global', 'install']
+}
+
+dependencies {
+    // We control node and npm via Gradle Node.js plugin.
+    // https://plugins.gradle.org/plugin/org.ysb33r.nodejs.npm
+    implementation 'org.ysb33r.nodejs.cmdline:org.ysb33r.nodejs.cmdline.gradle.plugin:0.10.0'
+
+    final spockGroovyVer = GroovySystem.version.replaceAll(/\.\d+$/,'')
+    testImplementation platform("org.spockframework:spock-bom:2.0-groovy-${spockGroovyVer}")
+    testImplementation 'org.spockframework:spock-core'
+
+    functionalTestImplementation project
+    functionalTestImplementation platform("org.spockframework:spock-bom:2.0-groovy-${spockGroovyVer}")
+    functionalTestImplementation 'org.spockframework:spock-core'
+}
