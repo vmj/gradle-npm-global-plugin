@@ -21,4 +21,39 @@ class NpmPackageLocalNameSpec extends NpmPackageSpecification {
         [pkg: 'p']             || 'p'
     }
 
+    void 'it should update the local name if alias is changed later'() {
+        given:
+        final npmPackage = npmPackage alias: 'a'
+        final localName = npmPackageLocalName npmPackage
+
+        when:
+        npmPackage.alias.set('local-alias')
+
+        then:
+        localName.get() == 'local-alias'
+    }
+
+    void 'it should update the local name if the package name is changed later'() {
+        given:
+        final npmPackage = npmPackage pkg: 'p'
+        final localName = npmPackageLocalName npmPackage
+
+        when:
+        npmPackage.pkg.set('some-package')
+
+        then:
+        localName.get() == 'some-package'
+    }
+
+    void 'it should update the local name if the alias is added later'() {
+        given:
+        final npmPackage = npmPackage pkg: 'p'
+        final localName = npmPackageLocalName npmPackage
+
+        when:
+        npmPackage.alias.set('local-alias')
+
+        then:
+        localName.get() == 'local-alias'
+    }
 }

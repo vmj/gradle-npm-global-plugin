@@ -22,12 +22,14 @@ abstract class NpmGlobalExtension {
 
     @Inject
     NpmGlobalExtension(Project project) {
-        logger = project.logger
+        this(project.logger, project.tasks)
+    }
+
+    private NpmGlobalExtension(Logger logger, TaskContainer tasks) {
+        this.logger = logger
 
         packages.whenObjectAdded((NpmPackage npmPackage) -> {
-            registerNpmGlobalInstallTask(logger,
-                                         project.tasks,
-                                         npmPackage)
+            registerNpmGlobalInstallTask(logger, tasks, npmPackage)
         })
     }
 
@@ -83,7 +85,6 @@ abstract class NpmGlobalExtension {
     static final void registerNpmGlobalInstallTask(
             Logger logger,
             TaskContainer tasks,
-            //NodeJSExtension nodejs,
             NpmPackage npmPackage) {
         final taskName = npmPackageInstallTaskName(npmPackage)
 
@@ -109,24 +110,19 @@ abstract class NpmGlobalExtension {
      */
     @PackageScope
     static final Provider<String> npmPackageLocation(NpmPackage pkg) {
-        final from = pkg.from
-        if (from.present) {
-            return from
-        }
-
         // npm install [<@scope>/]<name>
         // npm install [<@scope>/]<name>@<tag>
         // npm install [<@scope>/]<name>@<version>
         // npm install [<@scope>/]<name>@<version range>
         // npm install <alias>@npm:<name>
-        final alias = pkg.alias.map { it + '@npm:' }.orElse('')
-        final scope = pkg.scope.map { '@' + it + '/' }.orElse('')
+        final alias = pkg.alias.map { it + '@npm:' } orElse('')
+        final scope = pkg.scope.map { '@' + it + '/' } orElse('')
         final name = pkg.pkg.orElse(pkg.name)
-        final version = pkg.version.map { '@' + it }.orElse('')
+        final version = pkg.version.map { '@' + it } orElse('')
 
-        alias.zip(scope, NpmGlobalExtension::concat)
-             .zip(name, NpmGlobalExtension::concat)
-             .zip(version, NpmGlobalExtension::concat)
+        pkg.from.orElse(alias.zip(scope, String::concat)
+                             .zip(name, String::concat)
+                             .zip(version, String::concat))
     }
 
     @PackageScope
@@ -134,10 +130,6 @@ abstract class NpmGlobalExtension {
         pkg.alias
            .orElse(pkg.pkg)
            .orElse(pkg.name)
-    }
-
-    private static String concat(String a, String b) {
-        a + b
     }
 
 }
