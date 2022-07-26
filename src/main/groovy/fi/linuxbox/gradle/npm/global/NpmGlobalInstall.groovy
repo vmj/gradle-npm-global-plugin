@@ -55,8 +55,11 @@ abstract class NpmGlobalInstall extends NpmCmdlineTask {
     static final Provider<String> outputDir(Provider<File> node,
                                             Provider<String> localName) {
         node.zip(localName, (executable, module) -> {
-            executable.toPath()
-                      .resolve("../../lib/node_modules/$module") // TODO: does not work on Windows?
+            executable.parentFile.parentFile
+                      .toPath()
+                      .resolve("lib")
+                      .resolve("node_modules")
+                      .resolve(module)
                       .toFile()
                       .canonicalPath
         })
