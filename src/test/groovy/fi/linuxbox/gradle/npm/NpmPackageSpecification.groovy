@@ -9,7 +9,12 @@ abstract class NpmPackageSpecification extends Specification {
     NpmPackage npmPackage(Map<String, String> props = [:]) {
         final project = ProjectBuilder.builder().build()
         final doc = project.objects.domainObjectContainer(NpmPackage)
+
+        // use a default name for test convenience,
+        // since one cannot add objects to NamedDomainObjectContainer without
+        // a name
         final npmPackage = doc.create(props.get('name', 'n'))
+
         if (props.containsKey('from'))
             npmPackage.from.set(props.from)
         if (props.containsKey('alias'))
@@ -20,6 +25,7 @@ abstract class NpmPackageSpecification extends Specification {
             npmPackage.pkg.set(props.pkg)
         if (props.containsKey('version'))
             npmPackage.version.set(props.version)
+
         npmPackage
     }
 
