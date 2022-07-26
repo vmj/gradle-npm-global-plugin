@@ -8,7 +8,8 @@ import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 class NpmGlobalPluginSpec extends GradleSpecification {
     private static final Set<String> gradleVersions = [
             // https://gradle.org/releases/
-            '7.4.1', // Mar 09, 2022
+            '7.5',   // Jul 14, 2022
+            '7.4.2', // Mar 31, 2022
             '7.3.3', // Dec 22, 2021
             '7.2',   // Aug 17, 2021
             '7.1.1', // Jun 14, 2021
