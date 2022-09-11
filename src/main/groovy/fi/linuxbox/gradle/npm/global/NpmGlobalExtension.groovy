@@ -12,6 +12,9 @@ import org.gradle.api.tasks.TaskContainer
 
 import javax.inject.Inject
 
+/**
+ * Provides the {@code npmGlobal} extension to project build file.
+ */
 @CompileStatic
 abstract class NpmGlobalExtension {
     public static final String NAME = 'npmGlobal'
@@ -40,10 +43,10 @@ abstract class NpmGlobalExtension {
      * some other Gradle task depends on the {@code installPkg} task.
      *
      * @param pkg The NPM package name
-     * @param from The URL
-     * @param alias
-     * @param scope
-     * @param version
+     * @param from The URL from which to install the NPM package
+     * @param alias The local name to use for the NPM package
+     * @param scope The scope of the package.
+     * @param version The version of the package.
      */
     @NamedVariant(coerce = true)
     void install(String pkg,
@@ -70,6 +73,7 @@ abstract class NpmGlobalExtension {
     }
 
     /**
+     * Derives the Gradle compatible object name for an NPM package name.
      *
      * @param pkg NPM package name
      * @return Gradle domain object name in the npmGlobal extension object
@@ -81,6 +85,14 @@ abstract class NpmGlobalExtension {
         })
     }
 
+    /**
+     * Registers a task of type {@link NpmGlobalInstall}, that installs the
+     * given {@link NpmPackage}.
+     *
+     * @param logger Logger to use for debug logging
+     * @param tasks The tasks contained into which the task is registered
+     * @param npmPackage The package for which to register the task
+     */
     @PackageScope
     static final void registerNpmGlobalInstallTask(
             Logger logger,
@@ -98,15 +110,24 @@ abstract class NpmGlobalExtension {
         logger.debug("registered task $taskName")
     }
 
+    /**
+     * Given an {@link NpmPackage}, figures out the Gradle task name to install
+     * it.
+     *
+     * @param pkg The package.
+     * @return The task name.
+     */
     @PackageScope
     static final String npmPackageInstallTaskName(NpmPackage pkg) {
         "install${pkg.name.capitalize()}"
     }
 
     /**
+     * Given an {@link NpmPackage}, figures out the format the {@code npm}
+     * command line argument that can be used to install it.
      *
-     * @param pkg
-     * @return
+     * @param pkg The package.
+     * @return The location argument.
      */
     @PackageScope
     static final Provider<String> npmPackageLocation(NpmPackage pkg) {
@@ -125,6 +146,13 @@ abstract class NpmGlobalExtension {
                              .zip(version, String::concat))
     }
 
+    /**
+     * Given an {@link NpmPackage}, figures out the name of the expected local
+     * directory it will land in.
+     *
+     * @param pkg The package
+     * @return The local name
+     */
     @PackageScope
     static final Provider<String> npmPackageLocalName(NpmPackage pkg) {
         pkg.alias

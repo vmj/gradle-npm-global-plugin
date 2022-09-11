@@ -1,7 +1,6 @@
 package fi.linuxbox.gradle.npm.global
 
 import fi.linuxbox.gradle.GradleSpecification
-import org.gradle.testkit.runner.TaskOutcome
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
