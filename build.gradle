@@ -13,15 +13,6 @@ repositories {
     gradlePluginPortal()
 }
 
-publishing {
-    repositories {
-        maven {
-            name = 'localPluginRepository'
-            url = '../local-plugin-repository'
-        }
-    }
-}
-
 testing {
     suites {
         functionalTest(JvmTestSuite) {
