@@ -1,7 +1,13 @@
 = NPM Global Install plugin for Gradle
+:toc: preable
 :icons: font
+:badge_url: https://img.shields.io
+:badge_style: ?style=for-the-badge&color=green
 :nodejs: http://ysb33rorg.gitlab.io/nodejs-gradle-plugin/0.12.3/docs/product-documentation.html
 :example: ./src/functionalTest/groovy/fi/linuxbox/gradle/npm/global/ReadmeSpec.groovy
+
+image:{badge_url}/gradle-plugin-portal/v/fi.linuxbox.npm-global{badge_style}["Version at Gradle plugin portal",link=https://plugins.gradle.org/plugin/fi.linuxbox.npm-global]
+image:{badge_url}/maven-central/v/fi.linuxbox.gradle/gradle-npm-global-plugin{badge_style}["Version at Maven Central", link="https://search.maven.org/artifact/fi.linuxbox.gradle/gradle-npm-global-plugin"]
 
 While developing a project that is using Gradle for build, test, publish, and
 deploy automation, and some modules use Node.js based tools for some of the work,
@@ -97,8 +103,10 @@ Now, there are multiple ways to actually use the Yarn tool installed by the
 root project.  One way is to use the `npx` command via the `NpxCmdlineTask`,
 which comes from the {nodejs}[Node.js plugin].
 
-For example, to wrap the `yarn install` command in a Gradle task:
+For example, to wrap the `yarn install` command in a Gradle task,
+the `js-app-1` and `js-app-2` would have a `build.gradle` file as follows:
 
+.Contents of the `build.gradle` file in the `js-app-1` and `js-app-2` projects
 [source,groovy]
 ----
 include::{example}[tags=readme-example-js-app-build-gradle,indent=0]
@@ -136,10 +144,20 @@ a| Nothing but the name
 | scope: 'types'
 | npm install -g @types/foo
 
-| from: https://example.com/foo
+| from: 'https://example.com/foo'
 | npm install -g https://example.com/foo
 
 |===
 
 This plugin relies heavily on the {nodejs}[Node.js plugin],
 so be sure to look through its documentation, too.
+
+== Usage as a Library
+
+In case you want to use this as a library, this is available at Maven Central
+using group ID `fi.linuxbox.gradle` and artifact ID `gradle-npm-global-plugin`.
+
+== License
+
+gradle-npm-global-plugin is Free Software, licensed under GNU General Public
+License (GPL), version 3 or later. See link:LICENSE[] file for details.
