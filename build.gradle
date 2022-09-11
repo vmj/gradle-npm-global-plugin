@@ -4,6 +4,7 @@ plugins {
     id 'jvm-test-suite'
     // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
     id 'com.gradle.plugin-publish' version '1.0.0'
+    id 'signing'
 }
 
 group 'fi.linuxbox.gradle'
@@ -60,6 +61,63 @@ pluginBundle {
     website = 'https://gitlab.com/vmj/gradle-npm-global-plugin'
     vcsUrl = 'https://gitlab.com/vmj/gradle-npm-global-plugin'
     tags = ['npm', 'global', 'install']
+}
+
+publishing {
+    publications {
+        // pluginMaven(MavenPublication) add by plugin-publish plugin
+
+        pluginAsLib(MavenPublication) {
+            from components.java
+            pom {
+                // https://central.sonatype.org/publish/requirements/
+                name = 'NPM Global Install plugin for Gradle'
+                description = 'Install Node-based tools which are needed by a build'
+                url = 'https://gitlab.com/vmj/gradle-npm-global-plugin'
+                licenses {
+                    license {
+                        name = 'GNU General Public License v3.0 or later'
+                        url = 'https://spdx.org/licenses/GPL-3.0-or-later.html'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'vmj'
+                        name = 'Mikko Värri'
+                        email = 'mikko@varri.fi'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://gitlab.com/vmj/gradle-npm-global-plugin.git'
+                    developerConnection = 'scm:git:ssh://gitlab.com:vmj/gradle-npm-global-plugin.git'
+                    url = 'https://gitlab.com/vmj/gradle-npm-global-plugin'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username nexusUsername
+                password nexusPassword
+            }
+        }
+//        maven {
+//            name = 'someLocalRepo'
+//            url = '../local-plugin-repository'
+//        }
+    }
+}
+tasks.withType(PublishToMavenRepository) {
+    onlyIf {
+        // Do not publish the fi/linuxbox/npm-global stuff (pluginMaven)
+        publication == publishing.publications.pluginAsLib
+    }
+}
+
+signing {
+    sign publishing.publications.pluginAsLib
 }
 
 dependencies {
