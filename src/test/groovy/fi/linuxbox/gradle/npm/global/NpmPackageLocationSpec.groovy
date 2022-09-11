@@ -6,7 +6,7 @@ import static fi.linuxbox.gradle.npm.global.NpmGlobalExtension.npmPackageLocatio
 
 class NpmPackageLocationSpec extends NpmPackageSpecification {
 
-    void 'it should produce the correct location'() {
+    void 'it should produce the correct location'(Map<String, String> props, String location) {
         given:
         final npmPackage = npmPackage props
 

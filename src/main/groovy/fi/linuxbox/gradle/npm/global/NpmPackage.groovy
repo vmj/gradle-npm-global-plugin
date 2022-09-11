@@ -1,14 +1,14 @@
-package fi.linuxbox.gradle.npm.global;
+package fi.linuxbox.gradle.npm.global
 
-import org.gradle.api.Named;
-import org.gradle.api.provider.Property;
+import org.gradle.api.Named
+import org.gradle.api.provider.Property
 
 /**
  * Domain object in {@code npmGlobal.packages}.
  * <p>
  *     If using the convenience {@link NpmGlobalExtension#install install}
  *     function, the name of the object is derived from the first argument
- *     (the {@link #getPkg() NPM package name}).  It is derived by removing
+ *     (the {@link #getPkg NPM package name}).  It is derived by removing
  *     any spaces and punctuation and capitalizing the medial words.
  *     For example, {@code lower-camel-case} becomes {@code lowerCamelCase}.
  * </p>
@@ -21,7 +21,7 @@ import org.gradle.api.provider.Property;
  * </p>
  *
  */
-public interface NpmPackage extends Named {
+interface NpmPackage extends Named {
 
     /**
      * The verbatim location from where to install the NPM package.
@@ -35,7 +35,7 @@ public interface NpmPackage extends Named {
      *     location of the installation.
      * </p>
      */
-    Property<String> getFrom();
+    Property<String> getFrom()
 
     /**
      * Local alias for the installed package.
@@ -50,7 +50,7 @@ public interface NpmPackage extends Named {
      *     name.
      * </p>
      */
-    Property<String> getAlias();
+    Property<String> getAlias()
 
     /**
      * Namespace of the NPM package.
@@ -64,7 +64,7 @@ public interface NpmPackage extends Named {
      *     or the {@code scope} property from the {@code packages} block.
      * </p>
      */
-    Property<String> getScope();
+    Property<String> getScope()
 
     /**
      * The NPM package name.
@@ -79,7 +79,7 @@ public interface NpmPackage extends Named {
      *     {@link #getName()} name} property.
      * </p>
      */
-    Property<String> getPkg();
+    Property<String> getPkg()
 
     /**
      * Version of the NPM package.
@@ -93,6 +93,6 @@ public interface NpmPackage extends Named {
      *     or the {@code version} property from the {@code packages} block.
      * </p>
      */
-    Property<String> getVersion();
+    Property<String> getVersion()
 
 }

@@ -8,7 +8,7 @@ import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 class NpmGlobalPluginSpec extends GradleSpecification {
     private static final Set<String> gradleVersions = [
             // https://gradle.org/releases/
-            '7.5',   // Jul 14, 2022
+            '7.5.1', // Aug 05, 2022
             '7.4.2', // Mar 31, 2022
             '7.3.3', // Dec 22, 2021
             '7.2',   // Aug 17, 2021
@@ -31,7 +31,7 @@ class NpmGlobalPluginSpec extends GradleSpecification {
 //            '5.2.1', // Feb 08, 2019
     ]
 
-    void 'it should apply cleanly (Gradle #gradleVersion)'() {
+    void 'it should apply cleanly (Gradle #gradleVersion)'(String gradleVersion) {
         given:
         buildScript << '''
         plugins {
@@ -49,7 +49,7 @@ class NpmGlobalPluginSpec extends GradleSpecification {
         gradleVersion << gradleVersions
     }
 
-    void 'it should allow minimal configuration (Gradle #gradleVersion)'() {
+    void 'it should allow minimal configuration (Gradle #gradleVersion)'(String gradleVersion) {
         given:
         buildScript << '''
         plugins {
@@ -76,7 +76,7 @@ class NpmGlobalPluginSpec extends GradleSpecification {
         gradleVersion << [gradleVersions.first(), gradleVersions.last()]
     }
 
-    void 'it should allow aliasing (Gradle #gradleVersion)'() {
+    void 'it should allow aliasing (Gradle #gradleVersion)'(String gradleVersion) {
         given:
         buildScript << '''
         plugins {

@@ -2,8 +2,8 @@ plugins {
     id 'groovy'
     id 'groovy-gradle-plugin'
     id 'jvm-test-suite'
-    id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.16.0'
+    // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+    id 'com.gradle.plugin-publish' version '1.0.0'
 }
 
 group 'fi.linuxbox'
@@ -31,6 +31,11 @@ tasks.withType(Test).configureEach {
 }
 tasks.named('check') {
     dependsOn(testing.suites.functionalTest)
+}
+configurations {
+    functionalTestImplementation {
+        extendsFrom configurations.implementation, configurations.testImplementation
+    }
 }
 
 // Configure plugin development plugin
@@ -60,14 +65,10 @@ pluginBundle {
 dependencies {
     // We control node and npm via Gradle Node.js plugin.
     // https://plugins.gradle.org/plugin/org.ysb33r.nodejs.npm
-    implementation 'org.ysb33r.nodejs.cmdline:org.ysb33r.nodejs.cmdline.gradle.plugin:0.12.1'
-    implementation 'org.ysb33r.gradle:grolifant40:1.3.2'
+    implementation 'org.ysb33r.nodejs.cmdline:org.ysb33r.nodejs.cmdline.gradle.plugin:0.12.3'
+    implementation 'org.ysb33r.gradle:grolifant40:1.3.3'
 
     final spockGroovyVer = GroovySystem.version.replaceAll(/\.\d+$/,'')
-    testImplementation platform("org.spockframework:spock-bom:2.1-groovy-${spockGroovyVer}")
+    testImplementation platform("org.spockframework:spock-bom:2.2-groovy-${spockGroovyVer}")
     testImplementation 'org.spockframework:spock-core'
-
-    functionalTestImplementation project
-    functionalTestImplementation platform("org.spockframework:spock-bom:2.1-groovy-${spockGroovyVer}")
-    functionalTestImplementation 'org.spockframework:spock-core'
 }

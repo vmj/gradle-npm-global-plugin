@@ -6,7 +6,7 @@ import static fi.linuxbox.gradle.npm.global.NpmGlobalExtension.npmPackageLocalNa
 
 class NpmPackageLocalNameSpec extends NpmPackageSpecification {
 
-    void 'it should produce the correct local name'() {
+    void 'it should produce the correct local name'(Map<String, String> props, String localName) {
         given:
         final npmPackage = npmPackage props
 
