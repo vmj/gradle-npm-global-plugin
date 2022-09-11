@@ -1,0 +1,145 @@
+= NPM Global Install plugin for Gradle
+:icons: font
+:nodejs: http://ysb33rorg.gitlab.io/nodejs-gradle-plugin/0.12.3/docs/product-documentation.html
+:example: ./src/functionalTest/groovy/fi/linuxbox/gradle/npm/global/ReadmeSpec.groovy
+
+While developing a project that is using Gradle for build, test, publish, and
+deploy automation, and some modules use Node.js based tools for some of the work,
+it is useful to ensure that all of those modules agree on the version of the tool.
+
+This plugin helps with that.
+
+Currently, this plugin requires Gradle 7.1 or newer, and has been tested with
+the following Gradle versions:
+
+[source]
+----
+include::./src/functionalTest/groovy/fi/linuxbox/gradle/GradleSpecification.groovy[tags=readme-gradle-versions,indent=0]
+----
+
+== Usage
+
+In your `build.gradle`  --  typically in the root project since the tools are
+meant to be global  --  apply this plugin and define which NPM packages to
+install.
+
+[source,groovy]
+----
+include::{example}[tags=readme-usage-build-gradle,indent=0]
+----
+
+This configures an install task for each NPM package mentioned.  In the example,
+they would be `installYarn` and `installCdk`.
+
+Typically, other Gradle tasks would depend on these `install*` tasks.  They are
+not executed by themselves.  Also, they are cacheable, meaning that if you run
+`installCdk` twice, the second time it is `UP-TO-DATE`.
+
+=== Alternate Usage Syntax
+
+The above `build.gradle` could also be written like this:
+
+[source,groovy]
+----
+include::{example}[tags=readme-alternate-usage-build-gradle,indent=0]
+----
+
+== Example
+
+Let's say we have a project that produces, among other things, two JavaScript
+applications.  The directory structure might look like this:
+
+[plantuml]
+----
+folder "Root project" {
+    file "settings.gradle"
+    file "build.gradle" as B
+
+    folder "JavaScript App 1" {
+        file "build.gradle" as B1
+        file "package.json" as P1
+        folder "src" as S1
+    }
+    folder "JavaScript App 2" {
+        file "build.gradle" as B2
+        file "package.json" as P2
+        folder "src" as S2
+    }
+    folder "Backend"
+    folder "Infrastructure"
+}
+----
+
+The backend and the infrastructure might be implemented in whatever, like Java.
+But the root project includes the subprojects.
+
+.Contents of `settings.gradle` at the root of the project
+[source,groovy]
+----
+include::{example}[tags=readme-example-settings-gradle,indent=0]
+----
+
+Both of the JavaScript apps have chosen to use Yarn to install their dependencies
+and for running the "NPM scripts".  So it would make sense to install the Yarn
+tool once in the root project.
+
+.Contents of `build.gradle` at the root of the project
+[source,groovy]
+----
+include::{example}[tags=readme-example-build-gradle,indent=0]
+----
+<1> Installation of Yarn requires shell access.  This is a peculiarity of Yarn
+    installation and does not really have anything to do with `npm-global`
+    plugin.  But this is a good example of configuring the underlying
+    {nodejs}[Node.js plugin].
+
+Now, there are multiple ways to actually use the Yarn tool installed by the
+root project.  One way is to use the `npx` command via the `NpxCmdlineTask`,
+which comes from the {nodejs}[Node.js plugin].
+
+For example, to wrap the `yarn install` command in a Gradle task:
+
+[source,groovy]
+----
+include::{example}[tags=readme-example-js-app-build-gradle,indent=0]
+----
+<1> Apply the NPM plugin from {nodejs}[Node.js plugin].
+<2> Again, Yarn wants shell access.
+<3> Our custom `yarnInstall` task depends on Yarn being installed.
+<4> Provide arguments for the `npx` command.
+
+Note that the above example is really bare bones, and does not follow best
+Gradle practices.  For one, the custom `yarnInstall` task does not define inputs
+and outputs, so it is not cacheable and will always re-run the `yarn install`
+command, even if nothing changed in the `package.json` file.
+
+== Configuration Reference
+
+The `npmGlobal` extension defines the NPM packages to install.
+All the examples above have used the `version` property, but each package
+can define any of the properties listed below.
+
+[cols="1l,1l"]
+.Additional properties for a package `foo`.
+|===
+| property | Equivalent `npm` command line
+
+a| Nothing but the name
+| npm install -g foo
+
+| version: '1.2.3'
+| npm install -g foo@1.2.3
+
+| alias: 'foov1'
+| npm install -g foov1@npm:foo
+
+| scope: 'types'
+| npm install -g @types/foo
+
+| from: https://example.com/foo
+| npm install -g https://example.com/foo
+
+|===
+
+This plugin relies heavily on the {nodejs}[Node.js plugin],
+so be sure to look through its documentation, too.
