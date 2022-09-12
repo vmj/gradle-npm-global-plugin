@@ -4,6 +4,7 @@
 :badge_url: https://img.shields.io
 :badge_style: ?style=for-the-badge&color=green
 :nodejs: http://ysb33rorg.gitlab.io/nodejs-gradle-plugin/0.12.3/docs/product-documentation.html
+:task: ./src/functionalTest/groovy/fi/linuxbox/gradle/npm/global/NpmPackageCmdlineTaskSpec.groovy
 :example: ./src/functionalTest/groovy/fi/linuxbox/gradle/npm/global/ReadmeSpec.groovy
 
 image:{badge_url}/gradle-plugin-portal/v/fi.linuxbox.npm-global{badge_style}["Version at Gradle plugin portal",link=https://plugins.gradle.org/plugin/fi.linuxbox.npm-global]
@@ -49,6 +50,17 @@ The above `build.gradle` could also be written like this:
 ----
 include::{example}[tags=readme-alternate-usage-build-gradle,indent=0]
 ----
+
+When using the `install` syntax, the mandatory first argument is the NPM package
+name that is going to be installed.  That argument also determines the name of
+the install task that is registered.  F.ex. `install 'yarn', ...` registers task
+`installYarn` which installs the `yarn` NPM package.
+
+When using this alternate syntax, the `yarn` and `cdk` just happen to match the
+NPM package name.  We could have used a different name for the Gradle "domain
+object" and then used the `pkg` property to specify the NPM package name.  F.ex.
+`packages { foo { pkg 'yarn' } }` would register task `installFoo` which installs
+the `yarn` NPM package.
 
 == Example
 
@@ -111,15 +123,39 @@ the `js-app-1` and `js-app-2` would have a `build.gradle` file as follows:
 ----
 include::{example}[tags=readme-example-js-app-build-gradle,indent=0]
 ----
-<1> Apply the NPM plugin from {nodejs}[Node.js plugin].
+<1> Apply the NPM plugin from {nodejs}[Node.js plugin] to get access to the
+    `NpxCmdlineTask` task type.
 <2> Again, Yarn wants shell access.
 <3> Our custom `yarnInstall` task depends on Yarn being installed.
+    The `installYarn` task is in the root project in this example.
 <4> Provide arguments for the `npx` command.
 
 Note that the above example is really bare bones, and does not follow best
 Gradle practices.  For one, the custom `yarnInstall` task does not define inputs
 and outputs, so it is not cacheable and will always re-run the `yarn install`
 command, even if nothing changed in the `package.json` file.
+
+== Tasks that Execute an Entrypoint Script
+
+Many Node.js based tools have an entrypoint script for the command line they
+provide.  For example, after installing Yarn (`npm install -g yarn`) you can use
+the `yarn` command line tool, which actually just forks a Node.js process and
+executes the `.../lib/node_modules/yarn/bin/yarn.js` script.  The JavaScript
+file is the entrypoint script.
+
+This plugin provides a base class for custom task types that execute such an
+entrypoint.  The base class is `NpmPackageCmdlineTask`.
+
+.Example use of the `NpmPackageCmdlineTask` base class
+[source,groovy]
+----
+include::{task}[tags=single-project-example,indent=0]
+----
+
+What the base class does is it automatically adds the dependency on the tool
+installation task. It also resolves the NPM module directory, even if an alias
+is used.  It also works if the `npmGlobal` configuration is in a parent project
+and the registration of the custom tasks is in a child project.
 
 == Configuration Reference
 

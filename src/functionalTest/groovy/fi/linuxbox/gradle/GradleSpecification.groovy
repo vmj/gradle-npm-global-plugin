@@ -39,12 +39,15 @@ abstract class GradleSpecification extends Specification {
 
     @TempDir
     Path testProjectDir
+    @TempDir
+    File testKitDir
 
     GradleRunner gradle(String gradleVersion, String... args) {
         GradleRunner
                 .create()
                 .withGradleVersion(gradleVersion)
                 .withProjectDir(projectDir)
+                .withTestKitDir(testKitDir)
                 .withPluginClasspath()
                 .withArguments(args)
     }
